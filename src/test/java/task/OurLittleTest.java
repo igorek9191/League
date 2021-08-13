@@ -36,7 +36,7 @@ import static org.testng.Assert.fail;
 
 public class OurLittleTest extends BaseTest {
 
-    private String FILE_NAME = "report.txt";
+    private String fileName = "report.txt";
     private Path path;
     private BufferedWriter writer;
 
@@ -59,9 +59,9 @@ public class OurLittleTest extends BaseTest {
 
     @BeforeSuite
     public void beforeSuite() throws IOException {
-        Files.deleteIfExists(get(FILE_NAME));
+        Files.deleteIfExists(get(fileName));
 
-        path = Files.createFile(get(FILE_NAME));
+        path = Files.createFile(get(fileName));
         writer = new BufferedWriter(new FileWriter(path.toFile(), true));
 
         String apiKey = System.getProperty("api_key");
