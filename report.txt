@@ -1,0 +1,3 @@
+Breed id: sfol
+Image id: _rWrxmDVv
+Image URL: https://cdn2.thecatapi.com/images/_rWrxmDVv.png
