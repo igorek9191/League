@@ -1,46 +1,46 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "io.qameta.allure:allure-gradle:2.8.1"
-    }
-}
-
 plugins {
+    id 'io.qameta.allure' version '2.5'
     id 'java'
-    id 'io.qameta.allure' version '2.8.1'
 }
-
-sourceCompatibility = JavaVersion.VERSION_1_8
 
 allure {
     configuration = 'testImplementation'
     version = '2.7.0'
-    allureJavaVersion = '2.7.0'
+
+    useJUnit5 {
+        version = '2.7.0'
+    }
+
 }
+
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 group 'org.example'
 version '1.0-SNAPSHOT'
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
 dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
     implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'com.google.code.gson:gson:2.8.7'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     implementation 'io.rest-assured:rest-assured:4.4.0'
     implementation group: 'io.qameta.allure', name: 'allure-rest-assured', version: '2.14.0'
-    implementation "io.qameta.allure:allure-testng:2.14.0"
-    testImplementation group: 'org.testng', name: 'testng', version: '7.3.0'
+    implementation group: 'io.qameta.allure', name: 'allure-junit5', version: '2.14.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
 }
 
 test {
-    useTestNG() {
-        parallel = 'methods'
-        threadCount = 2
+    useJUnitPlatform{
+        systemProperty 'junit.jupiter.testinstance.lifecycle.default'         , 'per_class'
+        systemProperty 'junit.jupiter.execution.parallel.enabled',              'true'
+        systemProperty 'junit.jupiter.execution.parallel.mode.default',         'same_thread'
+        systemProperty 'junit.jupiter.execution.parallel.mode.classes.default', 'concurrent'
     }
     if (project.hasProperty("api_key")) {
         systemProperties.put("api_key", "$api_key")

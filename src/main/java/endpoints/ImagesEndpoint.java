@@ -7,15 +7,18 @@ import java.util.HashMap;
 
 import static io.restassured.RestAssured.given;
 
-public class Images {
+public class ImagesEndpoint extends EndpointTechnicalSteps{
 
-    public static Response search(RequestSpecification spec, String breedId) {
-        return given().spec(spec)
+    public ImagesEndpoint search(RequestSpecification spec, String breedId) {
+        Response response = given().spec(spec)
                       .params(new HashMap<String, String>() {{
                           put("breed_id", breedId);
                       }})
                       .when()
                       .get("images/search/");
+        assert response.getBody() != null;
+        this.response = response;
+        return this;
     }
 
 }
