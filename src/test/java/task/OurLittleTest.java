@@ -8,6 +8,7 @@ import dto.images.BreedImages;
 import endpoints.BreedsEndpoint;
 import endpoints.FavouritesEndpoint;
 import endpoints.ImagesEndpoint;
+import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,13 +17,17 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.nio.file.Paths.get;
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -45,7 +50,7 @@ public class OurLittleTest extends BaseTest {
     private FavouritesEndpoint favouritesEndpoint = new FavouritesEndpoint();
 
     private String fileName = "report.txt";
-    private Path path;
+    private Path pathToReport;
     private BufferedWriter writer;
 
     @BeforeAll
@@ -55,15 +60,41 @@ public class OurLittleTest extends BaseTest {
 
     private void prepareReport() throws IOException {
         Files.deleteIfExists(get(fileName));
-        path = Files.createFile(get(fileName));
-        writer = new BufferedWriter(new FileWriter(path.toFile(), true));
+        pathToReport = Files.createFile(get(fileName));
+        writer = new BufferedWriter(new FileWriter(pathToReport.toFile(), true));
+    }
+
+    //правильная строка []{}()
+    @Test
+    public void hardTaskFromSobes() {
+        LinkedHashMap<Integer, List<Character>> linkedHashMap = new LinkedHashMap<Integer, List<Character>>() {{
+            put(40, asList('(', ')'));
+            put(41, asList('(', ')'));
+            put(123, asList('{', '}'));
+            put(125, asList('{', '}'));
+            put(91, asList('[', ']'));
+            put(93, asList('[', ']'));
+        }};
+
+        String str = "[}{]";
+        boolean result = false;
+        char[] array = str.toCharArray();
+        for (int i = 0; i < array.length; i = i + 2) {
+            Character currentSymbol = array[i];
+            int integerRepresentation = (int) currentSymbol;
+            List<Character> characterList = linkedHashMap.get(integerRepresentation);
+            Character nextSymbol = array[i + 1];
+            result = characterList.contains(nextSymbol);
+            if(result == false) break;
+        }
+        System.out.println("RESULT: " + result);
     }
 
     @Test
     public void test() throws IOException {
         //1
-        List<Breed> breedBody = breedsEndpoint.search(spec, breedText).getBodyAsListOf(Breed.class);
-        id = breedBody.get(0).getId();
+        List<Breed> breedList = breedsEndpoint.search(spec, breedText).getBodyAsListOf(Breed.class);
+        id = breedList.get(0).getId();
         //2
         List<BreedImages> breedImages = imagesEndpoint.search(spec, id).getBodyAsListOf(BreedImages.class);
         if (breedImages.size() == 0) fail("Нет картинок для породы с id = " + id);
@@ -77,6 +108,7 @@ public class OurLittleTest extends BaseTest {
         writer.append("Image id: " + imageId + "\n");
         writer.append("Image URL: " + imageUrl + "\n");
         writer.close();
+        attachReport();
         //3
         PostFavouriteAnswer favouritesBody = favouritesEndpoint.postFavourites(spec, imageId).getBodyAs(PostFavouriteAnswer.class);
         message = favouritesBody.getMessage();
@@ -96,14 +128,9 @@ public class OurLittleTest extends BaseTest {
         if (ourFavourite.isPresent()) fail(format("Изображение с id = %d все еще в избранных", favouriteId));
     }
 
-    @AfterAll
-    public void afterSuite() throws IOException {
-        attachReport();
-    }
-
     @Attachment(value = "report", type = "text/plain", fileExtension = ".txt")
     public byte[] attachReport() throws IOException {
-        byte[] array = Files.readAllBytes(path);
+        byte[] array = Files.readAllBytes(pathToReport);
         return array;
     }
 
