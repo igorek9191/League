@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class SecondTest extends BaseTest {
     //правильная строка []{}()
     @Test
     public void hardTaskFromSobes() {
-        List<String> poolOfStrings = asList("[]{}()", "{}[]()", ")({}[]", "(]{)[}", "()[){}");
+        List<String> poolOfStrings = asList("[]{}()", "{}][()", ")({}[]", "(]{)[}", "()[){}");
         for(String str : poolOfStrings) defineWasTheStringCorrect(str);
     }
 

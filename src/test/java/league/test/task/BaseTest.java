@@ -12,14 +12,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest(classes = MyApplication.class)
-@ContextConfiguration(classes = {
-        RequestSpecHandler.class,
-        BreedsEndpoint.class,
-        ImagesEndpoint.class,
-        FavouritesEndpoint.class,
-        CategoriesEndpoint.class
-})
-//@ContextConfiguration(loader= AnnotationConfigContextLoader.class)
 public class BaseTest {
 
     @Lazy
