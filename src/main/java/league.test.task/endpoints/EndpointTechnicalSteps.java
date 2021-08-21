@@ -1,4 +1,4 @@
-package endpoints;
+package league.test.task.endpoints;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;

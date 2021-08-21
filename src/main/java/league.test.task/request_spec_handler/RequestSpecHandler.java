@@ -1,4 +1,4 @@
-package task;
+package league.test.task.request_spec_handler;
 
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -6,20 +6,19 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.Getter;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+@Getter
+@Component
+public class RequestSpecHandler {
 
-public class BaseTest {
-
-    protected String boxes = "boxes";
-    protected RequestSpecification spec;
     private String baseUrl = "https://api.thecatapi.com/v1/";
+    private RequestSpecification spec;
 
-    @BeforeAll
-    public void beforeSuite() {
+    public void initRequestSpecification(){
         String apiKey = System.getProperty("api_key");
-        spec = new RequestSpecBuilder()
+        this.spec = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .setBaseUri(baseUrl)
                 .addHeader("x-api-key", apiKey)
@@ -27,6 +26,6 @@ public class BaseTest {
                 .addFilter(new RequestLoggingFilter())
                 .addFilter(new AllureRestAssured())
                 .build();
+        System.out.println("\n");
     }
-
 }

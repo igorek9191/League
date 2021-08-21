@@ -1,4 +1,4 @@
-package dto.category;
+package league.test.task.dto.category;
 
 import lombok.Data;
 

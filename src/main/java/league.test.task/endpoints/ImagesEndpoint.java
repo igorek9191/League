@@ -1,7 +1,9 @@
-package endpoints;
+package league.test.task.endpoints;
 
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import league.test.task.request_spec_handler.RequestSpecHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.HashMap;
 
@@ -9,8 +11,12 @@ import static io.restassured.RestAssured.given;
 
 public class ImagesEndpoint extends EndpointTechnicalSteps{
 
-    public ImagesEndpoint search(RequestSpecification spec, String breedId) {
-        Response response = given().spec(spec)
+    @Lazy
+    @Autowired
+    private RequestSpecHandler requestSpecHandler;
+
+    public ImagesEndpoint search(String breedId) {
+        Response response = given().spec(requestSpecHandler.getSpec())
                       .params(new HashMap<String, String>() {{
                           put("breed_id", breedId);
                       }})

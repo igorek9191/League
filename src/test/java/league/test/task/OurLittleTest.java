@@ -1,40 +1,49 @@
-package task;
+package league.test.task;
 
-import dto.breed.Breed;
-import dto.favourites.DeleteFavouriteAnswer;
-import dto.favourites.Favourite;
-import dto.favourites.PostFavouriteAnswer;
-import dto.images.BreedImages;
-import endpoints.BreedsEndpoint;
-import endpoints.FavouritesEndpoint;
-import endpoints.ImagesEndpoint;
-import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
-import org.junit.jupiter.api.AfterAll;
+import league.test.task.BaseTest;
+import league.test.task.dto.breed.Breed;
+import league.test.task.dto.favourites.DeleteFavouriteAnswer;
+import league.test.task.dto.favourites.Favourite;
+import league.test.task.dto.favourites.PostFavouriteAnswer;
+import league.test.task.dto.images.BreedImages;
+import league.test.task.endpoints.BreedsEndpoint;
+import league.test.task.endpoints.FavouritesEndpoint;
+import league.test.task.endpoints.ImagesEndpoint;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.nio.file.Paths.get;
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
 public class OurLittleTest extends BaseTest {
 
-    private String breedText = "Scottish Fold";
+    @Lazy
+    @Autowired
+    private BreedsEndpoint breedsEndpoint;
+    @Lazy
+    @Autowired
+    private ImagesEndpoint imagesEndpoint;
+    @Lazy
+    @Autowired
+    private FavouritesEndpoint favouritesEndpoint;
 
+    private String breedText = "Scottish Fold";
     private String id;
     private BreedImages imageBody;
     private String breed_id;
@@ -45,58 +54,26 @@ public class OurLittleTest extends BaseTest {
     private Integer favouriteId;
     private List<Favourite> favouriteList;
 
-    private BreedsEndpoint breedsEndpoint = new BreedsEndpoint();
-    private ImagesEndpoint imagesEndpoint = new ImagesEndpoint();
-    private FavouritesEndpoint favouritesEndpoint = new FavouritesEndpoint();
-
     private String fileName = "report.txt";
     private Path pathToReport;
     private BufferedWriter writer;
 
     @BeforeAll
     public void beforeALlInOurLittleTest() throws IOException {
-        prepareReport();
-    }
-
-    private void prepareReport() throws IOException {
         Files.deleteIfExists(get(fileName));
         pathToReport = Files.createFile(get(fileName));
         writer = new BufferedWriter(new FileWriter(pathToReport.toFile(), true));
     }
 
-    //правильная строка []{}()
     @Test
-    public void hardTaskFromSobes() {
-        LinkedHashMap<Integer, List<Character>> linkedHashMap = new LinkedHashMap<Integer, List<Character>>() {{
-            put(40, asList('(', ')'));
-            put(41, asList('(', ')'));
-            put(123, asList('{', '}'));
-            put(125, asList('{', '}'));
-            put(91, asList('[', ']'));
-            put(93, asList('[', ']'));
-        }};
-
-        String str = "[}{]";
-        boolean result = false;
-        char[] array = str.toCharArray();
-        for (int i = 0; i < array.length; i = i + 2) {
-            Character currentSymbol = array[i];
-            int integerRepresentation = (int) currentSymbol;
-            List<Character> characterList = linkedHashMap.get(integerRepresentation);
-            Character nextSymbol = array[i + 1];
-            result = characterList.contains(nextSymbol);
-            if(result == false) break;
-        }
-        System.out.println("RESULT: " + result);
+    public void test1() {
+        List<Breed> breedList = breedsEndpoint.search(breedText).getBodyAsListOf(Breed.class);
+        id = breedList.get(0).getId();
     }
 
     @Test
-    public void test() throws IOException {
-        //1
-        List<Breed> breedList = breedsEndpoint.search(spec, breedText).getBodyAsListOf(Breed.class);
-        id = breedList.get(0).getId();
-        //2
-        List<BreedImages> breedImages = imagesEndpoint.search(spec, id).getBodyAsListOf(BreedImages.class);
+    public void test2() throws IOException {
+        List<BreedImages> breedImages = imagesEndpoint.search(id).getBodyAsListOf(BreedImages.class);
         if (breedImages.size() == 0) fail("Нет картинок для породы с id = " + id);
         imageBody = breedImages.get(0);
         breed_id = imageBody.getBreeds().get(0).getId();
@@ -109,21 +86,33 @@ public class OurLittleTest extends BaseTest {
         writer.append("Image URL: " + imageUrl + "\n");
         writer.close();
         attachReport();
-        //3
-        PostFavouriteAnswer favouritesBody = favouritesEndpoint.postFavourites(spec, imageId).getBodyAs(PostFavouriteAnswer.class);
+    }
+
+    @Test
+    public void test3() {
+        PostFavouriteAnswer favouritesBody = favouritesEndpoint.postFavourites(imageId).getBodyAs(PostFavouriteAnswer.class);
         message = favouritesBody.getMessage();
         assertEquals(message, "SUCCESS");
         favouriteId = favouritesBody.getId();
-        //4
-        favouriteList = favouritesEndpoint.getFavourites(spec).getBodyAsListOf(Favourite.class);
+    }
+
+    @Test
+    public void test4() {
+        favouriteList = favouritesEndpoint.getFavourites().getBodyAsListOf(Favourite.class);
         ourFavourite = favouriteList.stream().filter(x -> x.getId().equals(favouriteId)).findFirst();
         if (!ourFavourite.isPresent()) fail("Не нашли избранного кота с id " + favouriteId);
         assertEquals(ourFavourite.get().getImage().getUrl(), imageUrl);
-        //5
-        message = favouritesEndpoint.deleteFavourite(spec, favouriteId).getBodyAs(DeleteFavouriteAnswer.class).getMessage();
+    }
+
+    @Test
+    public void test5() {
+        message = favouritesEndpoint.deleteFavourite(favouriteId).getBodyAs(DeleteFavouriteAnswer.class).getMessage();
         assertEquals(message, "SUCCESS");
-        //6
-        favouriteList = favouritesEndpoint.getFavourites(spec).getBodyAsListOf(Favourite.class);
+    }
+
+    @Test
+    public void test6() {
+        favouriteList = favouritesEndpoint.getFavourites().getBodyAsListOf(Favourite.class);
         ourFavourite = favouriteList.stream().filter(x -> x.getId().equals(favouriteId)).findFirst();
         if (ourFavourite.isPresent()) fail(format("Изображение с id = %d все еще в избранных", favouriteId));
     }

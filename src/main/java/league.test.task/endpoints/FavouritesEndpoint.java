@@ -1,7 +1,10 @@
-package endpoints;
+package league.test.task.endpoints;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import league.test.task.request_spec_handler.RequestSpecHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.HashMap;
 
@@ -9,12 +12,12 @@ import static io.restassured.RestAssured.given;
 
 public class FavouritesEndpoint extends EndpointTechnicalSteps {
 
-    public FavouritesEndpoint() {
-        super();
-    }
+    @Lazy
+    @Autowired
+    private RequestSpecHandler requestSpecHandler;
 
-    public FavouritesEndpoint postFavourites(RequestSpecification spec, String imageId) {
-        Response response = given().spec(spec)
+    public FavouritesEndpoint postFavourites(String imageId) {
+        Response response = given().spec(requestSpecHandler.getSpec())
                                    .when()
                                    .body(new HashMap<String, String>() {{
                                        put("image_id", imageId);
@@ -25,8 +28,8 @@ public class FavouritesEndpoint extends EndpointTechnicalSteps {
         return this;
     }
 
-    public FavouritesEndpoint getFavourites(RequestSpecification spec) {
-        Response response = given().spec(spec)
+    public FavouritesEndpoint getFavourites() {
+        Response response = given().spec(requestSpecHandler.getSpec())
                                    .when()
                                    .get("favourites/")
                                    .thenReturn();
@@ -35,8 +38,8 @@ public class FavouritesEndpoint extends EndpointTechnicalSteps {
         return this;
     }
 
-    public FavouritesEndpoint deleteFavourite(RequestSpecification spec, Integer favouriteId) {
-        Response response = given().spec(spec)
+    public FavouritesEndpoint deleteFavourite(Integer favouriteId) {
+        Response response = given().spec(requestSpecHandler.getSpec())
                                    .when()
                                    .delete("favourites/" + favouriteId)
                                    .thenReturn();

@@ -1,4 +1,4 @@
-package dto.favourites;
+package league.test.task.dto.favourites;
 
 import lombok.Data;
 

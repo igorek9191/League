@@ -1,6 +1,6 @@
-package dto.images;
+package league.test.task.dto.images;
 
-import dto.breed.Breed;
+import league.test.task.dto.breed.Breed;
 import lombok.Data;
 
 import java.util.List;

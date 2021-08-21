@@ -1,4 +1,4 @@
-package dto.breed;
+package league.test.task.dto.breed;
 
 import lombok.Data;
 
