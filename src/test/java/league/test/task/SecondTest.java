@@ -57,4 +57,34 @@ public class SecondTest extends BaseTest {
         }
         System.out.println("Result for string '" + str + "' is: " + result);
     }
+
+    @Test
+    public void wasTheStringAPalindrome(){
+        Boolean result = true;
+        String str = "qweww";
+        int i = 0, j = str.length() - 1;
+
+        while (i < j) {
+            if (str.charAt(i) != str.charAt(j)){
+                result = false;
+                break;
+            }
+            i++;
+            j--;
+        }
+        System.out.println("Was the string: '" +str+ "' a palindrome? " + result);
+    }
+
+    @Test
+    public void revertString() {
+        String string = "Y*T*R*E*W*Q";
+        String result = "";
+        char[] array = string.toCharArray();
+        for(int i = array.length - 1; i >=0 ; i --){
+            String currentSymbol = String.valueOf(array[i]);
+            result = result + currentSymbol;
+        }
+        System.out.println("Initial string:  " + string);
+        System.out.println("Reverted string: " + result);
+    }
 }

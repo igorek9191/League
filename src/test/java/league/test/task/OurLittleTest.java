@@ -67,7 +67,9 @@ public class OurLittleTest extends BaseTest {
 
     @Test
     public void test1() {
-        List<Breed> breedList = breedsEndpoint.search(breedText).getBodyAsListOf(Breed.class);
+        List<Breed> breedList = breedsEndpoint
+                                .search(breedText)
+                                .getBodyAsListOf(Breed.class);
         id = breedList.get(0).getId();
     }
 
