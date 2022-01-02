@@ -1,5 +1,6 @@
 package league.test.task;
 
+import league.test.task.dto.category.Categories;
 import league.test.task.dto.category.Category;
 import league.test.task.endpoints.CategoriesEndpoint;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Lazy;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -24,8 +26,8 @@ public class SecondTest extends BaseTest {
 
     @Test
     public void secondTest() {
-        List<Category> categories = categoriesEndpoint.getListOfCategories().getBodyAsListOf(Category.class);
-        boxesCategory = categories.stream().filter(x -> x.getName().equalsIgnoreCase(boxes)).findFirst();
+        Categories categories = categoriesEndpoint.getListOfCategories();
+        boxesCategory = categories.findByNameOptional(boxes);
         if (!boxesCategory.isPresent()) fail("Нет категории с названием " + boxes);
     }
 

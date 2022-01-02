@@ -1,5 +1,7 @@
 package league.test.task.endpoints;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
@@ -7,15 +9,14 @@ import java.util.List;
 
 public class EndpointTechnicalSteps {
 
-    protected Response response;
+    private static Gson gsonInstance;
 
-    public <T> List<T> getBodyAsListOf(Class<T> aClass) {
-        JsonPath jsonPath = response.getBody().jsonPath();
-        return jsonPath.getList("", aClass);
-    }
+    public static Gson getGsonInstance() {
+        if (gsonInstance == null) {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonInstance = gsonBuilder.create();
+        }
 
-    public <T> T getBodyAs(Class<T> aClass) {
-        JsonPath jsonPath = response.getBody().jsonPath();
-        return jsonPath.getObject("", aClass);
+        return gsonInstance;
     }
 }

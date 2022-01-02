@@ -1,11 +1,10 @@
 package league.test.task;
 
 import io.qameta.allure.Attachment;
-import league.test.task.BaseTest;
 import league.test.task.dto.breed.Breed;
-import league.test.task.dto.favourites.DeleteFavouriteAnswer;
 import league.test.task.dto.favourites.Favourite;
-import league.test.task.dto.favourites.PostFavouriteAnswer;
+import league.test.task.dto.favourites.Favourites;
+import league.test.task.dto.favourites.PostFavouriteResponce;
 import league.test.task.dto.images.BreedImages;
 import league.test.task.endpoints.BreedsEndpoint;
 import league.test.task.endpoints.FavouritesEndpoint;
@@ -30,7 +29,7 @@ import static java.nio.file.Paths.get;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@TestMethodOrder(MethodOrderer.Alphanumeric.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class OurLittleTest extends BaseTest {
 
     @Lazy
@@ -43,16 +42,19 @@ public class OurLittleTest extends BaseTest {
     @Autowired
     private FavouritesEndpoint favouritesEndpoint;
 
-    private String breedText = "Scottish Fold";
-    private String id;
+    private List<Breed> breedList;
+    private List<BreedImages> breedImages;
     private BreedImages imageBody;
-    private String breed_id;
+    private Favourite ourFavourite;
+    private Favourites favourites;
+
+    private String breedText = "Scottish Fold";
+    private String breedId;
     private String imageId;
     private String imageUrl;
     private String message;
-    private Optional<Favourite> ourFavourite;
+    private String id;
     private Integer favouriteId;
-    private List<Favourite> favouriteList;
 
     private String fileName = "report.txt";
     private Path pathToReport;
@@ -67,23 +69,22 @@ public class OurLittleTest extends BaseTest {
 
     @Test
     public void test1() {
-        List<Breed> breedList = breedsEndpoint
-                                .search(breedText)
-                                .getBodyAsListOf(Breed.class);
+        breedList = breedsEndpoint.search(breedText);
         id = breedList.get(0).getId();
     }
 
     @Test
     public void test2() throws IOException {
-        List<BreedImages> breedImages = imagesEndpoint.search(id).getBodyAsListOf(BreedImages.class);
+        breedImages = imagesEndpoint.search(id);
         if (breedImages.size() == 0) fail("Нет картинок для породы с id = " + id);
+
         imageBody = breedImages.get(0);
-        breed_id = imageBody.getBreeds().get(0).getId();
-        assertEquals(id, breed_id);
+        breedId = imageBody.getBreeds().get(0).getId();
+        assertEquals(id, breedId);
         imageId = imageBody.getId();
         imageUrl = imageBody.getUrl();
 
-        writer.append("Breed id: " + breed_id + "\n");
+        writer.append("Breed id: " + breedId + "\n");
         writer.append("Image id: " + imageId + "\n");
         writer.append("Image URL: " + imageUrl + "\n");
         writer.close();
@@ -92,7 +93,7 @@ public class OurLittleTest extends BaseTest {
 
     @Test
     public void test3() {
-        PostFavouriteAnswer favouritesBody = favouritesEndpoint.postFavourites(imageId).getBodyAs(PostFavouriteAnswer.class);
+        PostFavouriteResponce favouritesBody = favouritesEndpoint.postFavourites(imageId);
         message = favouritesBody.getMessage();
         assertEquals(message, "SUCCESS");
         favouriteId = favouritesBody.getId();
@@ -100,22 +101,21 @@ public class OurLittleTest extends BaseTest {
 
     @Test
     public void test4() {
-        favouriteList = favouritesEndpoint.getFavourites().getBodyAsListOf(Favourite.class);
-        ourFavourite = favouriteList.stream().filter(x -> x.getId().equals(favouriteId)).findFirst();
-        if (!ourFavourite.isPresent()) fail("Не нашли избранного кота с id " + favouriteId);
-        assertEquals(ourFavourite.get().getImage().getUrl(), imageUrl);
+        favourites = favouritesEndpoint.getFavourites();
+        ourFavourite = favourites.findFavourite(favouriteId);
+        assertEquals(ourFavourite.getImage().getUrl(), imageUrl);
     }
 
     @Test
     public void test5() {
-        message = favouritesEndpoint.deleteFavourite(favouriteId).getBodyAs(DeleteFavouriteAnswer.class).getMessage();
+        message = favouritesEndpoint.deleteFavourite(favouriteId).getMessage();
         assertEquals(message, "SUCCESS");
     }
 
     @Test
     public void test6() {
-        favouriteList = favouritesEndpoint.getFavourites().getBodyAsListOf(Favourite.class);
-        ourFavourite = favouriteList.stream().filter(x -> x.getId().equals(favouriteId)).findFirst();
+        favourites = favouritesEndpoint.getFavourites();
+        Optional<Favourite> ourFavourite = favourites.findOptionalFavourite(favouriteId);
         if (ourFavourite.isPresent()) fail(format("Изображение с id = %d все еще в избранных", favouriteId));
     }
 
@@ -124,5 +124,4 @@ public class OurLittleTest extends BaseTest {
         byte[] array = Files.readAllBytes(pathToReport);
         return array;
     }
-
 }

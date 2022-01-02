@@ -1,12 +1,15 @@
 package league.test.task.endpoints;
 
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import league.test.task.dto.images.BreedImages;
 import league.test.task.request_spec_handler.RequestSpecHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -17,7 +20,7 @@ public class ImagesEndpoint extends EndpointTechnicalSteps{
     @Autowired
     private RequestSpecHandler requestSpecHandler;
 
-    public ImagesEndpoint search(String breedId) {
+    public List<BreedImages> search(String breedId) {
         Response response = given().spec(requestSpecHandler.getSpec())
                       .params(new HashMap<String, String>() {{
                           put("breed_id", breedId);
@@ -25,8 +28,8 @@ public class ImagesEndpoint extends EndpointTechnicalSteps{
                       .when()
                       .get("images/search/");
         assert response.getBody() != null;
-        this.response = response;
-        return this;
+        JsonPath jsonPath = response.getBody().jsonPath();
+        return jsonPath.getList("", BreedImages.class);
     }
 
 }

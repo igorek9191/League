@@ -1,13 +1,21 @@
 package league.test.task.endpoints;
 
+import com.google.gson.reflect.TypeToken;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import league.test.task.dto.favourites.DeleteFavouriteResponce;
+import league.test.task.dto.favourites.Favourite;
+import league.test.task.dto.favourites.Favourites;
+import league.test.task.dto.favourites.PostFavouriteResponce;
 import league.test.task.request_spec_handler.RequestSpecHandler;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -18,35 +26,41 @@ public class FavouritesEndpoint extends EndpointTechnicalSteps {
     @Autowired
     private RequestSpecHandler requestSpecHandler;
 
-    public FavouritesEndpoint postFavourites(String imageId) {
+    public PostFavouriteResponce postFavourites(String imageId) {
         Response response = given().spec(requestSpecHandler.getSpec())
-                                   .when()
-                                   .body(new HashMap<String, String>() {{
-                                       put("image_id", imageId);
-                                   }})
-                                   .post("favourites/");
+                .when()
+                .body(new HashMap<String, String>() {{
+                    put("image_id", imageId);
+                }})
+                .post("favourites/");
         assert response.getBody() != null;
-        this.response = response;
-        return this;
+        JsonPath jsonPath = response.getBody().jsonPath();
+        return jsonPath.getObject("", PostFavouriteResponce.class);
     }
 
-    public FavouritesEndpoint getFavourites() {
+    @SneakyThrows
+    public Favourites getFavourites() {
         Response response = given().spec(requestSpecHandler.getSpec())
-                                   .when()
-                                   .get("favourites/")
-                                   .thenReturn();
+                .when()
+                .get("favourites/")
+                .thenReturn();
         assert response.getBody() != null;
-        this.response = response;
-        return this;
+
+        Type collectionType = new TypeToken<List<Favourite>>() {
+        }.getType();
+        List<Favourite> favouritesResponse = getGsonInstance().fromJson(response.asString(), collectionType);
+        Favourites favourites = new Favourites();
+        favourites.setFavourites(favouritesResponse);
+        return favourites;
     }
 
-    public FavouritesEndpoint deleteFavourite(Integer favouriteId) {
+    public DeleteFavouriteResponce deleteFavourite(Integer favouriteId) {
         Response response = given().spec(requestSpecHandler.getSpec())
-                                   .when()
-                                   .delete("favourites/" + favouriteId)
-                                   .thenReturn();
+                .when()
+                .delete("favourites/" + favouriteId)
+                .thenReturn();
         assert response.getBody() != null;
-        this.response = response;
-        return this;
+        JsonPath jsonPath = response.getBody().jsonPath();
+        return jsonPath.getObject("", DeleteFavouriteResponce.class);
     }
 }
