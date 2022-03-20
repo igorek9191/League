@@ -1,5 +1,6 @@
 package league.test.task.dto.favourites;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -9,6 +10,8 @@ import java.util.Optional;
 
 @Data
 public class Favourites {
+
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<Favourite> favourites;
 
     @JsonIgnore

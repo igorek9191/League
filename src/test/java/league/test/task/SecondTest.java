@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Lazy;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -28,12 +27,12 @@ public class SecondTest extends BaseTest {
     public void secondTest() {
         Categories categories = categoriesEndpoint.getListOfCategories();
         boxesCategory = categories.findByNameOptional(boxes);
-        if (!boxesCategory.isPresent()) fail("Нет категории с названием " + boxes);
+        if (!boxesCategory.isPresent()) fail("There is no category with name: " + boxes);
     }
 
-    //правильная строка []{}()
+    //correct string []{}()
     @Test
-    public void hardTaskFromSobes() {
+    public void hardTaskFromInterview() {
         List<String> poolOfStrings = asList("[]{}()", "{}][()", ")({}[]", "(]{)[}", "()[){}");
         for(String str : poolOfStrings) defineWasTheStringCorrect(str);
     }

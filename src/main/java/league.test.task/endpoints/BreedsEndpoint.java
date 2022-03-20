@@ -2,7 +2,6 @@ package league.test.task.endpoints;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import league.test.task.dto.breed.Breed;
 import league.test.task.request_spec_handler.RequestSpecHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ public class BreedsEndpoint extends EndpointTechnicalSteps {
                                    .get("breeds/search/")
                                    .thenReturn();
         assert response.getBody() != null;
-//        this.response = response;
         JsonPath jsonPath = response.getBody().jsonPath();
         return jsonPath.getList("", Breed.class);
 

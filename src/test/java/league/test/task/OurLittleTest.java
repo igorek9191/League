@@ -76,7 +76,7 @@ public class OurLittleTest extends BaseTest {
     @Test
     public void test2() throws IOException {
         breedImages = imagesEndpoint.search(id);
-        if (breedImages.size() == 0) fail("Нет картинок для породы с id = " + id);
+        if (breedImages.size() == 0) fail("There is no pictures for breed with id = " + id);
 
         imageBody = breedImages.get(0);
         breedId = imageBody.getBreeds().get(0).getId();
@@ -116,7 +116,7 @@ public class OurLittleTest extends BaseTest {
     public void test6() {
         favourites = favouritesEndpoint.getFavourites();
         Optional<Favourite> ourFavourite = favourites.findOptionalFavourite(favouriteId);
-        if (ourFavourite.isPresent()) fail(format("Изображение с id = %d все еще в избранных", favouriteId));
+        if (ourFavourite.isPresent()) fail(format("Picture with id = %d is still in favourites", favouriteId));
     }
 
     @Attachment(value = "report", type = "text/plain", fileExtension = ".txt")

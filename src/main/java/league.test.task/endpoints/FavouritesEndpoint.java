@@ -46,8 +46,7 @@ public class FavouritesEndpoint extends EndpointTechnicalSteps {
                 .thenReturn();
         assert response.getBody() != null;
 
-        Type collectionType = new TypeToken<List<Favourite>>() {
-        }.getType();
+        Type collectionType = new TypeToken<List<Favourite>>() {}.getType();
         List<Favourite> favouritesResponse = getGsonInstance().fromJson(response.asString(), collectionType);
         Favourites favourites = new Favourites();
         favourites.setFavourites(favouritesResponse);

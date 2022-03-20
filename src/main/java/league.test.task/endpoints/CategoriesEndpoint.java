@@ -1,14 +1,9 @@
 package league.test.task.endpoints;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import league.test.task.dto.category.Categories;
 import league.test.task.dto.category.Category;
-import league.test.task.dto.favourites.Favourite;
-import league.test.task.dto.favourites.Favourites;
 import league.test.task.request_spec_handler.RequestSpecHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

@@ -2,10 +2,6 @@ package league.test.task.endpoints;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-
-import java.util.List;
 
 public class EndpointTechnicalSteps {
 

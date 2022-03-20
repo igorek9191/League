@@ -26,6 +26,5 @@ public class RequestSpecHandler {
                 .addFilter(new RequestLoggingFilter())
                 .addFilter(new AllureRestAssured())
                 .build();
-        System.out.println("\n");
     }
 }
